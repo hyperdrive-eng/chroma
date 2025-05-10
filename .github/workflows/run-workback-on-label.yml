@@ -53,25 +53,21 @@ jobs:
             echo "::error::No markdown file was generated"
             exit 1
           fi
-      
-          MD_CONTENT=$(cat "$MD_FILE")
-      
-          # Escape special characters for GitHub Actions output
-          ESCAPED="${MD_CONTENT//'%'/'%25'}"
-          ESCAPED="${ESCAPED//$'\n'/'%0A'}"
-          ESCAPED="${ESCAPED//$'\r'/'%0D'}"
-      
-          echo "md_content=$ESCAPED" >> "$GITHUB_OUTPUT"
+          
+          echo "md_file_path=$MD_FILE" >> "$GITHUB_ENV"
 
       - name: Comment on issue
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const body = `${{ steps.run-workback.outputs.md_content }}`;
+            const fs = require('fs');
+            const mdContent = fs.readFileSync(process.env.MD_FILE_PATH, 'utf8');
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body
+              body: mdContent
             });
+        env:
+          MD_FILE_PATH: ${{ env.md_file_path }}
