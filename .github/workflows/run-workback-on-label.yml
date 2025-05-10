@@ -30,7 +30,7 @@ jobs:
 
       - name: Clone Workback
         run: |
-          git clone https://x-access-token:${{ secrets.WORKBACK_PAT }}@github.com/hyperdrive-eng/workback.git
+          git clone https://x-access-token:${{ secrets.WORKBACK }}@github.com/hyperdrive-eng/workback.git
           cd workback
           git checkout pc-workflow
 
@@ -63,7 +63,7 @@ jobs:
       - name: Comment on issue
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.WORKBACK_PAT }}
+          github-token: ${{ secrets.WORKBACK }}
           script: |
             const mdContent = `${{ steps.run-workback.outputs.md_content }}`;
             await github.rest.issues.createComment({
