@@ -14,7 +14,7 @@ jobs:
         run: |
           mkdir -p ~/.workback
           echo "${{ secrets.CLAUDE_KEY }}" > ~/.workback/api_key
-          echo "${{ secrets.CLAUDE_KEY }}" > ~/.workback/github_key
+          echo "${{ secrets.GH_TOKEN }}" > ~/.workback/github_key
           chmod 600 ~/.workback/api_key
           chmod 600 ~/.workback/github_key
           
