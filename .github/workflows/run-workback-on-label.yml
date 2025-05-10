@@ -41,34 +41,37 @@ jobs:
           pip install build
           python -m build
           pip install dist/*.whl
-
+      
       - name: Run workback CLI
         id: run-workback
         run: |
           workback main --github ${{ github.event.issue.html_url }}
-
+      
           MD_FILE=$(find ~/.workback/reports -name "final_report.md" -type f | head -1)
-
+      
           if [ -z "$MD_FILE" ]; then
             echo "::error::No markdown file was generated"
             exit 1
           fi
-
+      
           MD_CONTENT=$(cat "$MD_FILE")
-
-          echo "md_content<<EOF" >> $GITHUB_OUTPUT
-          echo "$MD_CONTENT" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+      
+          # Escape special characters for GitHub Actions output
+          ESCAPED="${MD_CONTENT//'%'/'%25'}"
+          ESCAPED="${ESCAPED//$'\n'/'%0A'}"
+          ESCAPED="${ESCAPED//$'\r'/'%0D'}"
+      
+          echo "md_content=$ESCAPED" >> "$GITHUB_OUTPUT"
 
       - name: Comment on issue
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GH_PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const mdContent = `${{ steps.run-workback.outputs.md_content }}`;
+            const body = `${{ steps.run-workback.outputs.md_content }}`;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
-              body: mdContent
+              body
             });
