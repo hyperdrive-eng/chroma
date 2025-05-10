@@ -30,7 +30,7 @@ jobs:
 
       - name: Clone Workback
         run: |
-          git clone https://github.com/hyperdrive-eng/workback.git
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/hyperdrive-eng/workback.git
           cd workback
           git checkout pc-workflow
 
