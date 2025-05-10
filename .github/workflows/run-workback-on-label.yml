@@ -45,7 +45,7 @@ jobs:
       - name: Run workback CLI
         id: run-workback
         run: |
-          workback --github ${{ github.event.issue.html_url }}
+          workback main --github ${{ github.event.issue.html_url }}
 
           MD_FILE=$(find ~/.workback/reports -name "final_report.md" -type f | head -1)
 
