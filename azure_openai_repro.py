@@ -14,7 +14,6 @@ $ OPENAI_LOG=debug AZURE_OPENAI_API_KEY="azure-openai-api-key" python <this_file
 
 import chromadb
 import os
-from openai import AzureOpenAI
 from chromadb.utils.embedding_functions.openai_embedding_function import OpenAIEmbeddingFunction
 
 """
