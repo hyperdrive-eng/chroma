@@ -75,12 +75,8 @@ class RustBindingsAPI(ServerAPI):
             max_file_handles = resource.getrlimit(resource.RLIMIT_NOFILE)[0]
         else:
             max_file_handles = ctypes.windll.msvcrt._getmaxstdio()  # type: ignore
-        self.hnsw_cache_size = (
-            max_file_handles
-            # This is integer division in Python 3, and not a comment.
-            # Each HNSW index has 4 data files and 1 metadata file
-            // 5
-        )
+        # Calculate cache size with a minimum value of 1 to avoid segmentation fault
+        self.hnsw_cache_size = max(1, max_file_handles // 5)
 
     @override
     def start(self) -> None:
