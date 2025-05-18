@@ -538,6 +538,17 @@ class SqliteMetadataSegment(MetadataReader):
                     for w in cast(Sequence[Where], v)
                 ]
                 clause.append(reduce(lambda x, y: x | y, criteria))
+            # Add explicit checks for $in and $nin operators at top level
+            elif k == "$in" or k == "$nin":
+                # Handle $in and $nin operators when they are at the root of a where clause
+                # This ensures they are treated as operators, not metadata keys
+                expr = cast(Union[LiteralValue, Dict[WhereOperator, LiteralValue]], v)
+                # We pass an empty string as the key and the operator as a parameter to _value_criterion
+                if isinstance(v, list):
+                    clause.append(_value_criterion("", v, cast(InclusionExclusionOperator, k), q, metadata_t, embeddings_t))
+                else:
+                    # Handle other value types
+                    clause.append(_value_criterion("", [v], cast(InclusionExclusionOperator, k), q, metadata_t, embeddings_t))
             else:
                 expr = cast(Union[LiteralValue, Dict[WhereOperator, LiteralValue]], v)
                 clause.append(_where_clause(k, expr, q, metadata_t, embeddings_t))

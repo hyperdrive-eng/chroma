@@ -42,6 +42,11 @@ __all__ = [
     "UpdateMetadata",
 ]
 META_KEY_CHROMA_DOCUMENT = "chroma:document"
+# Define reserved operator names
+RESERVED_OPERATORS = [
+    "$and", "$or", "$in", "$nin", "$gt", "$gte", "$lt", "$lte", "$ne", "$eq"
+]
+
 T = TypeVar("T")
 OneOrMany = Union[T, List[T]]
 
@@ -681,6 +686,18 @@ def validate_metadata(metadata: Metadata) -> Metadata:
         if key == META_KEY_CHROMA_DOCUMENT:
             raise ValueError(
                 f"Expected metadata to not contain the reserved key {META_KEY_CHROMA_DOCUMENT}"
+            )
+        # Add validation for operator names used as metadata keys
+        if key in RESERVED_OPERATORS:
+            raise ValueError(
+                f"Metadata key '{key}' conflicts with a reserved operator name. "
+                f"Please use a different key name."
+            )
+        # Validate that strings starting with $ aren't used for metadata keys
+        if isinstance(key, str) and key.startswith("$"):
+            raise ValueError(
+                f"Metadata key '{key}' starts with '$', which is reserved for operators. "
+                f"Please use a different key name."
             )
         if not isinstance(key, str):
             raise TypeError(
