@@ -26,11 +26,11 @@ server.authz
 server.authn
 
 .venv
-venv
-.env
-.chroma
+venv/
+.env/
+.chroma/
 *.egg-info
-dist
+dist/
 
 .terraform/
 .terraform.lock.hcl
